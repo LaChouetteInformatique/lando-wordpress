@@ -8,3 +8,4 @@ wp-content/
 .lando.yml.local
 config.yaml
 config.env
+app/

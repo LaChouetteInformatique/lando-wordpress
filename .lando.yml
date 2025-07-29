@@ -1,21 +1,23 @@
-# ~/wordpress_template/.lando.yml - Version 17
+# ~/wordpress_template/.lando.yml
 
 name: wp-template-app # IMPORTANT: à changer pour chaque projet
 
 recipe: wordpress
 config:
-  webroot: .
+  webroot: app
   php: '8.1'
   database: mysql:8.0
 
-# On définit une commande personnalisée qui accepte des arguments
+# On définit notre commande d'installation
 tooling:
   install:
     service: appserver
     description: "Finalise l'installation WP. USAGE: lando install -- --url=VOTRE_URL"
     cmd:
-      # $@ passe tous les arguments supplémentaires au script
+      # Le script est maintenant exécuté depuis la racine, mais doit travailler dans "app"
       - /app/scripts/init.sh
       - $@
   wp:
     service: appserver
+    # On dit à WP-CLI où se trouve WordPress
+    cmd: /usr/local/bin/wp --path=/app/app

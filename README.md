@@ -53,25 +53,20 @@ git clone https://votre-repo.git ~/wordpress_template
     -   **`.lando.yml` :** Modifiez la ligne `name:` pour donner un nom unique à votre projet Lando (ex: `mon-nouveau-site-dev`).
     -   **`config.env` :** Ajustez le titre du site, les identifiants admin et la liste des plugins gratuits.
 
-4.  **Initialiser le dépôt Git :**
-    ```bash
-    git init && git add . && git commit -m "Initial commit"
-    ```
-
-5.  **Démarrer les conteneurs (`lando start`) :**
+4.  **Démarrer les conteneurs (`lando start`) :**
     ```bash
     lando start
     ```
     > [!NOTE]
     > À la fin de cette commande, le site affichera l'écran d'installation de WordPress. **C'est normal et attendu.** Attendez que la commande se termine (ou faites `CTRL+C` si elle boucle) pour passer à l'étape suivante.
 
-6.  **Obtenir l'URL active (`lando info`) :**
+5.  **Obtenir l'URL active (`lando info`) :**
     ```bash
     lando info
     ```
     Repérez l'URL principale dans la sortie (ex: `http://mon-nouveau-site-dev.lndo.site:8000/`) et copiez-la.
 
-7.  **Finaliser l'installation (`lando install`) :**
+6.  **Finaliser l'installation (`lando install`) :**
     Lancez notre commande personnalisée en lui passant l'URL que vous venez de copier.
     ```bash
     # Syntaxe : lando install -- --url=<URL_COPIÉE>

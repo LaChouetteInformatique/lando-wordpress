@@ -1,11 +1,8 @@
-# Ignorer le contenu du dossier des plugins premium
 plugins-premium/
-
-# Ignorer les fichiers générés par WordPress et Lando
+app/
+config.env
+config.yaml
 wp-config.php
 wp-content/
 .wp-installed
 .lando.yml.local
-config.yaml
-config.env
-app/

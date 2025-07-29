@@ -1,189 +1,195 @@
-# Template de Déploiement WordPress avec Lando
+# Lando WordPress Boilerplate
 
-## Objectif
+## Goal
 
-Ce projet fournit un template et un workflow pour initialiser des environnements de développement WordPress locaux **propres et prêts à l'emploi** en quelques minutes.
+This project provides a template and workflow to initialize clean, production-ready local WordPress development environments in minutes.
 
-Le processus automatisé vous livre :
--   Une installation fraîche de la dernière version de WordPress dans un sous-dossier `app/` dédié.
--   Un site pré-configuré avec vos paramètres (titre, admin, etc.) via un simple fichier `config.env`.
--   Vos plugins favoris (gratuits et premium) installés et activés.
--   Une installation **nettoyée** : les plugins par défaut (Akismet, Hello Dolly) et les thèmes inutiles sont automatiquement supprimés.
+The automated process delivers:
+-   A fresh installation of the latest WordPress version inside a dedicated `app/` subdirectory.
+-   A pre-configured site with your settings (title, admin credentials, etc.) via a simple `config.env` file.
+-   Your favorite free and premium plugins installed and activated.
+-   A **clean** installation: default plugins (Akismet, Hello Dolly) and unused themes are automatically removed.
 
-L'architecture sépare les fichiers de l'environnement de développement (Lando, scripts) des fichiers de l'application (WordPress), ce qui est idéal pour les migrations via des plugins.
+The architecture separates development environment files (Lando, scripts) from application files (WordPress), which is ideal for migrations using plugins.
 
-## Prérequis
+## Prerequisites
 
-- Docker Desktop (Windows/macOS) ou Docker Engine (Linux)
-- Lando (dernière version stable)
-- WSL2 (pour les utilisateurs Windows)
+- Docker Desktop (Windows/macOS) or Docker Engine (Linux)
+- Lando (latest stable version)
+- WSL2 (for Windows users)
 - Git
-- `rsync` (généralement installé par défaut sur Linux et WSL)
+- `rsync` (typically installed by default on Linux and WSL)
 
 ---
 
-## 1. Configuration Initiale (à faire une seule fois)
+## 1. Initial Setup (One-Time Only)
 
-Avant de pouvoir créer des projets, vous devez cloner ce template sur votre machine locale. Il servira de "blueprint" pour tous vos futurs sites.
+Before you can create projects, you must clone this template to your local machine. It will serve as the blueprint for all your future sites.
 
 ```bash
-# Clonez le dépôt du template dans votre dossier home
-git clone https://votre-repo.git ~/wordpress_template
+# Clone the template repository to your home directory
+git clone https://your-repo.git ~/wordpress_template
 ```
 
 > [!IMPORTANT]
-> Ce dossier `~/wordpress_template` est votre source de vérité. Vous n'y travaillerez jamais directement.
+> This `~/wordpress_template` directory is your source of truth. You will never work in it directly.
 
 ---
 
-## 2. Workflows de Création de Projet
+## 2. Project Creation Workflows
 
-### Workflow A : Créer un Nouveau Site de Zéro
+### Workflow A: Create a New Blank Site
 
-C'est le point de départ pour tout nouveau projet, qu'il soit vierge ou un clone.
+This is the starting point for any new project, whether it's blank or a clone.
 
-1.  **Initialiser le dossier du projet :**
+1.  **Initialize the Project Folder:**
     ```bash
-    mkdir ~/mon-nouveau-site.dev && cd $_
+    mkdir ~/my-new-site.dev && cd $_
     ```
 
-2.  **Copier le template (sans l'historique Git) :**
-    Utilisez `rsync` pour copier les fichiers du template tout en excluant le dossier `.git`.
+2.  **Copy the Template (without Git history):**
+    Use `rsync` to copy the template files while excluding the `.git` directory.
     ```bash
     rsync -av --exclude='.git' ~/wordpress_template/ .
     ```
+    > [!NOTE]
+    > This command ensures your new project is a clean slate, without inheriting the template's Git history.
 
-3.  **Personnaliser la configuration :**
-    -   **`.lando.yml` :** Modifiez la ligne `name:` pour donner un nom unique à votre projet Lando (ex: `mon-nouveau-site-dev`).
-    -   **`config.env` :** Ajustez le titre du site, les identifiants admin et la liste des plugins gratuits.
+3.  **Customize the Configuration:**
+    -   **`.lando.yml`:** Edit the `name:` line to give your Lando project a unique name (e.g., `my-new-site-dev`).
+    -   **`config.env`:** Adjust the site title, admin credentials, and the list of free plugins.
 
-4.  **Initialiser le dépôt Git :**
+4.  **Initialize the Git Repository:**
     ```bash
     git init && git add . && git commit -m "Initial commit"
     ```
 
-5.  **Démarrer les conteneurs (`lando start`) :**
+5.  **Start the Containers (`lando start`):**
+    This command starts the services (web server, database) and prepares the WordPress files.
     ```bash
     lando start
     ```
     > [!NOTE]
-    > Attendez que la commande se termine (ou faites `CTRL+C` si elle boucle sur les `vitals`) pour passer à l'étape suivante.
+    > At the end of this command, the site will show the WordPress installation screen. **This is normal and expected.** Wait for the command to finish (or press `CTRL+C` if it hangs on the `vitals` check) to proceed to the next step.
 
-6.  **Obtenir l'URL active (`lando info`) :**
+6.  **Get the Active URL (`lando info`):**
+    Lando has chosen a port for your site. Get the exact URL with this command.
     ```bash
     lando info
     ```
-    Repérez l'URL principale dans la sortie (ex: `http://mon-nouveau-site-dev.lndo.site:8000/`) et copiez-la.
+    Find the main URL in the output (e.g., `http://my-new-site-dev.lndo.site:8000/`) and copy it.
 
-7.  **Finaliser l'installation (`lando install`) :**
-    Lancez notre commande personnalisée en lui passant l'URL que vous venez de copier.
+7.  **Finalize the Installation (`lando install`):**
+    Run our custom command, passing it the URL you just copied.
     ```bash
-    # Syntaxe : lando install -- --url=<URL_COPIÉE>
-    lando install -- --url=http://mon-nouveau-site-dev.lndo.site:8000
+    # Syntax: lando install -- --url=<COPIED_URL>
+    lando install -- --url=http://my-new-site-dev.lndo.site:8000
     ```
-    Le script va installer le site et créer un fichier `.lando-url.txt` contenant cette URL.
+    > [!IMPORTANT]
+    > The double dash `--` is crucial. It tells Lando to pass the `--url` argument directly to our script.
 
-Votre site vierge est maintenant prêt.
+The script will install the site and create a `.lando-url.txt` file containing this URL for future reference. Your new site is now fully installed and accessible.
 
 ---
 
-### Workflow B : Cloner un Site Existant
+### Workflow B: Clone an Existing Site
 
-Il y a deux méthodes principales pour cloner un site. Choisissez celle qui correspond à vos outils.
+There are two main methods to clone a site. Choose the one that fits your toolset.
 
-#### Méthode 1 : Export/Import Manuel (avec WP-CLI)
+#### Method 1: Manual Export/Import (with WP-CLI)
 
-Cette méthode vous donne un contrôle total sur le processus.
+This method gives you full control over the process.
 
-1.  **Exporter depuis la Production :**
-    -   Via SSH, connectez-vous à votre serveur.
-    -   Exportez la base de données : `wp db export backup_prod.sql`
-    -   Archivez les fichiers : `tar -czvf wp-content.tar.gz wp-content`
-    -   Téléchargez `backup_prod.sql` et `wp-content.tar.gz` sur votre machine.
+1.  **Export from Production:**
+    -   SSH into your production server.
+    -   Navigate to the site's root directory.
+    -   Export the database: `wp db export backup_prod.sql`
+    -   Archive the files: `tar -czvf wp-content.tar.gz wp-content`
+    -   Download `backup_prod.sql` and `wp-content.tar.gz` to your local machine.
 
-2.  **Créer l'Environnement Local Vierge :**
-    -   Suivez **toutes les étapes du Workflow A** pour créer un site local propre et fonctionnel.
+2.  **Create the Blank Local Environment:**
+    -   Follow **all steps of Workflow A** to create a clean, functional local site.
 
-3.  **Importer les Données en Local :**
-    -   Placez `backup_prod.sql` et `wp-content.tar.gz` à la racine de votre projet Lando.
-    -   Exécutez les commandes suivantes :
+3.  **Import Production Data Locally:**
+    -   Place `backup_prod.sql` and `wp-content.tar.gz` in the root of your Lando project.
+    -   Run the following commands:
         ```bash
-        # 1. Importer la base de données de production
+        # 1. Import the production database, overwriting the blank one
         lando db-import backup_prod.sql
 
-        # 2. Remplacer le dossier wp-content
+        # 2. Replace the wp-content directory
         rm -rf app/wp-content
         tar -xzvf wp-content.tar.gz -C app/
         ```
 
-4.  **Finaliser la Migration :**
-    -   Mettez à jour les URLs dans la base de données :
+4.  **Finalize the Migration:**
+    -   Update the URLs in the database:
         ```bash
         URL_LOCALE=$(cat .lando-url.txt)
-        lando wp search-replace 'https://www.votre-site-prod.com' "$URL_LOCALE" --all-tables
+        lando wp search-replace 'https://www.your-prod-site.com' "$URL_LOCALE" --all-tables
         ```
-    -   Videz le cache et rafraîchissez les permaliens :
+    -   Flush the cache and refresh permalinks:
         ```bash
         lando wp cache flush
         lando wp rewrite flush --hard
         ```
-    -   Connectez-vous à `/wp-admin` avec les identifiants de **production**.
+    -   Log in to `/wp-admin` using your **production** credentials.
 
 ---
 
-#### Méthode 2 : Restauration via un Plugin (ex: WPvivid)
+#### Method 2: Restore via a Migration Plugin (e.g., WPvivid)
 
-Cette méthode est souvent plus simple si vous n'avez pas d'accès SSH.
+This method is often simpler if you don't have SSH access.
 
-1.  **Exporter depuis la Production :**
-    -   Sur votre site de production, utilisez votre plugin de migration (ex: WPvivid) pour créer une sauvegarde complète.
-    -   Téléchargez le fichier de sauvegarde généré par le plugin.
+1.  **Export from Production:**
+    -   On your production site, use your migration plugin (e.g., WPvivid) to create a full backup.
+    -   Download the backup file(s) generated by the plugin.
 
-2.  **Créer l'Environnement Local Vierge (avec le plugin de migration) :**
-    -   Suivez **toutes les étapes du Workflow A**.
-    -   **Point crucial :** Avant de lancer `lando install`, assurez-vous que le plugin de migration sera bien présent sur votre site local.
-        -   **Version gratuite :** Ajoutez le slug du plugin (ex: `wpvivid-backuprestore`) à la liste `PLUGINS_LIST` dans votre fichier `config.env`.
-        -   **Version Pro :** Placez le fichier `.zip` du plugin dans le dossier `plugins-premium/`.
-    -   Lancez `lando install` comme d'habitude.
+2.  **Create the Blank Local Environment (with the migration plugin):**
+    -   Follow **all steps of Workflow A**.
+    -   **Crucial Point:** Before running `lando install`, ensure the migration plugin will be present on your local site.
+        -   **Free Version:** Add the plugin's slug (e.g., `wpvivid-backuprestore`) to the `PLUGINS_LIST` in your `config.env` file.
+        -   **Pro Version:** Place the plugin's `.zip` file in the `plugins-premium/` directory.
+    -   Run `lando install` as usual.
 
-3.  **Restaurer la Sauvegarde en Local :**
-    -   Connectez-vous à l'administration de votre nouveau site local vierge.
-    -   Allez dans l'interface du plugin de migration que vous venez d'installer.
-    -   Utilisez sa fonction "Importer" ou "Restaurer" pour téléverser le fichier de sauvegarde que vous avez téléchargé depuis le site de production.
-    -   Suivez les instructions du plugin pour lancer la restauration.
+3.  **Restore the Backup Locally:**
+    -   Log in to the admin dashboard of your new, blank local site.
+    -   Go to the interface of the migration plugin you just installed.
+    -   Use its "Upload" or "Restore" feature to upload the backup file from your production site.
+    -   Follow the plugin's instructions to run the restoration.
 
-4.  **Finaliser :**
-    -   La plupart des plugins de migration modernes gèrent automatiquement le `search-replace` des URLs pendant la restauration.
-    -   Une fois la restauration terminée, vous serez probablement déconnecté. Reconnectez-vous avec les identifiants de **production**.
-    -   Par sécurité, allez dans `Réglages > Permaliens` et cliquez sur "Enregistrer les modifications" pour rafraîchir les règles de réécriture.
+4.  **Finalize:**
+    -   Most modern migration plugins automatically handle the URL `search-replace` during restoration.
+    -   After the restore is complete, you will likely be logged out. Log back in using your **production** credentials.
+    -   As a safety measure, go to `Settings > Permalinks` and click "Save Changes" to refresh the rewrite rules.
 
 ---
 
-## Commandes Utiles
+## Useful Lando Commands
 
 ```bash
-# Démarre les conteneurs
+# Starts the containers
 lando start
 
-# Finalise l'installation de WordPress
+# Finalizes the WordPress installation
 lando install -- --url=<URL>
 
-# Affiche les informations (URLs, BDD, etc.)
+# Displays information (URLs, DB credentials, etc.)
 lando info
 
-# Exécute une commande WP-CLI
-lando wp <commande>
+# Runs a WP-CLI command
+lando wp <command>
 
-# Arrête l'environnement
+# Stops the environment
 lando stop
 
-# Supprime complètement l'environnement (irréversible !)
+# Completely destroys the environment (irreversible!)
 lando destroy -y
 ```
 
 ## License
 
-Ce projet est dédié au domaine public. Pour plus de détails, voir le fichier [LICENSE](LICENSE).
+This project is dedicated to the public domain. For more details, see the [LICENSE](LICENSE) file.
 
 ---
-*README généré par Gemini 2.5 Pro*
+*README generated by Gemini 2.5 Pro*

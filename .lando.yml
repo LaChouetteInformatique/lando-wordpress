@@ -1,23 +1,24 @@
 # ~/wordpress_template/.lando.yml
 
-name: wp-template-app # IMPORTANT: à changer pour chaque projet
+name: wp-template-app # IMPORTANT: to be changed for each project
 
 recipe: wordpress
 config:
+  # The web server will point to the "app" subdirectory.
   webroot: app
   php: '8.1'
   database: mysql:8.0
 
-# On définit notre commande d'installation
+# Define our custom installation command
 tooling:
   install:
     service: appserver
-    description: "Finalise l'installation WP. USAGE: lando install -- --url=VOTRE_URL"
+    description: "Finalizes the WP installation. USAGE: lando install -- --url=YOUR_URL"
     cmd:
-      # Le script est maintenant exécuté depuis la racine, mais doit travailler dans "app"
+      # The script is run from the project root, so we use an absolute path.
       - /app/scripts/init.sh
       - $@
   wp:
     service: appserver
-    # On dit à WP-CLI où se trouve WordPress
+    # Tell WP-CLI where the WordPress installation is located.
     cmd: /usr/local/bin/wp --path=/app/app

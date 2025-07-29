@@ -106,56 +106,6 @@ lando stop
 lando destroy -y
 ```
 
-## Dépannage (Troubleshooting)
-
-### Le site est cassé après un `lando restart` (Problème de port qui change)
-
-**Problème :** Après un `lando stop` puis `lando start`, le site est inaccessible. C'est parce que Lando a assigné un nouveau port, mais la base de données WordPress a mémorisé l'ancien.
-
-#### Solution 1 (Rapide, non garantie) : Tenter de retrouver le bon port
-
-```bash
-# Arrêtez et redémarrez plusieurs fois
-lando stop
-lando start
-```
-
-Parfois, Lando retombera sur le port d'origine et le site fonctionnera à nouveau.
-
-#### Solution 2 (Fiable) : Réparer la base de données avec `search-replace`
-
-1.  **Lancez `lando start`** et attendez qu'il se termine.
-
-2.  **Obtenez la NOUVELLE URL** avec `lando info`.
-    ```bash
-    # Exemple de commande pour la stocker dans une variable
-    NOUVELLE_URL=$(lando info --format json | grep -o '"urls":\["[^"]*' | grep -o '[^"]*$' | head -n 1)
-    echo "La nouvelle URL est : $NOUVELLE_URL"
-    ```
-
-3.  **Obtenez l'ANCIENNE URL** en lisant le fichier que le script a créé pour vous.
-    ```bash
-    # Exemple de commande pour la stocker dans une variable
-    ANCIENNE_URL=$(cat .lando-url.txt)
-    echo "L'ancienne URL était : $ANCIENNE_URL"
-    ```
-
-4.  **Lancez la commande de réparation :**
-    ```bash
-    lando wp search-replace "$ANCIENNE_URL" "$NOUVELLE_URL"
-    ```
-
-5.  **Mettez à jour le fichier de sauvegarde** avec la nouvelle URL pour la prochaine fois.
-    ```bash
-    echo "$NOUVELLE_URL" > .lando-url.txt
-    ```
-    Votre site est de nouveau accessible sur la nouvelle URL.
-
-### Autres problèmes
-
-- **`lando install` échoue avec "Vous devez fournir l'URL" :** Vous avez oublié de passer l'argument `--url` ou vous avez oublié le double tiret `--`. La syntaxe correcte est `lando install -- --url=...`.
-- **Le script échoue pour une autre raison :** Lancez `lando logs -s appserver` pour voir les logs détaillés du conteneur où le script s'exécute.
-
 ## License
 
 Ce projet est dédié au domaine public. Pour plus de détails, voir le fichier [LICENSE](LICENSE).

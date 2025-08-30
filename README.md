@@ -28,7 +28,7 @@ Before you can create projects, you must clone this template to your local machi
 
 ```bash
 # Clone the template repository to your home directory
-git clone https://your-repo.git ~/wordpress_template
+git clone https://github.com/LaChouetteInformatique/lando-wordpress.git ~/wordpress_template
 ```
 
 > [!IMPORTANT]
